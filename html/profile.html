@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #4CAF50;
+            overflow: visible;
+            padding: 15px 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .left {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .right {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            font-size: 16px;
+        }
+
+        .navbar a:hover {
+            background-color: #45a049;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .dropdown button:hover {
+            background-color: #45a049;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            z-index: 10000;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            top: 100%;
+            left: 0;
+        }
+
+        .dropdown-content a {
+            color: #4CAF50;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown button::after {
+            content: " ▼";
+            font-size: 12px;
+            color: white;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 70px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .results h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .results p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="left">
+            <div class="dropdown">
+                <button>Features</button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('diet_view') }}">Diet Record</a>
+                    <a href="{{ url_for('search_food_view') }}">Food Info</a>
+                    <a href="{{ url_for('daily_summary_view') }}">Suggestion</a>
+                </div>
+            </div>
+        </div>
+        <div class="right">
+            <a href="{{ url_for('homepage') }}">Home</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Your Profile</h2>
+
+        <form id="profileForm" method="POST" action="/profile/save">
+            <div class="form-group">
+                <label for="username">User Name</label>
+                <input type="text" id="username" name="username" value="{{ user.name or '' }}" placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+                <label for="weight">Weight (kg)</label>
+                <input type="number" id="weight" name="weight" value="{{ user.weight or '' }}" placeholder="Enter your weight">
+            </div>
+            <div class="form-group">
+                <label for="height">Height (cm)</label>
+                <input type="number" id="height" name="height" value="{{ user.height or '' }}" placeholder="Enter your height">
+            </div>
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" value="{{ user.age or '' }}" placeholder="Enter your age">
+            </div>
+            <div class="form-group">
+                <label for="exercise">Average Exercise Days per Week</label>
+                <input type="number" id="exercise" name="exercise" value="{{ user.workout_frequency or '' }}" placeholder="Enter number of days">
+            </div>
+        
+            <button type="submit" class="submit-btn">Save</button>
+        </form>
+        
+        <div class="results" id="results">
+            <h3>Your Metrics</h3>
+            <p id="bmi">BMI: {{ user.bmi }}</p>
+            <p id="bmr">BMR: {{ user.bmr }} kcal/day</p>
+            <p id="tdee">TDEE: {{ user.tdee }} kcal/day</p>
+        </div>
+        
+    </div>
+
+    <footer>
+        &copy; 2024 Personalized Nutrition Recommendation System. All rights reserved.
+    </footer>
+
+    <script>
+        function saveProfile() {
+            alert('Your profile has been saved!');
+        }
+    </script>
+</body>
+</html>

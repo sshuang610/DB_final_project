@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet Log</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #4CAF50;
+            overflow: visible;
+            padding: 15px 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .navbar .left {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .right {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            font-size: 16px;
+        }
+
+        .navbar a:hover {
+            background-color: #45a049;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .dropdown button:hover {
+            background-color: #45a049;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            z-index: 10000;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            top: 100%;
+            left: 0;
+        }
+
+        .dropdown-content a {
+            color: #4CAF50;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown button::after {
+            content: " ▼";
+            font-size: 12px;
+            color: white;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 70px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #4CAF50;
+            text-align: center;
+        }
+
+        .calendar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .meal-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .meal-table th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .meal-table th:nth-child(1) {
+            width: 25%;
+        }
+
+        .meal-table th:nth-child(2) {
+            width: 75%;
+        }
+
+        .meal-table td {
+            padding: 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+            position: relative;
+        }
+
+        .meal-table td[onclick] {
+            cursor: pointer;
+        }
+
+        .meal-table td .add-button {
+            content: "+";
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #a5d6a7;
+            cursor: pointer;
+            display: block;
+        }
+
+        .meal-table td:hover .add-button {
+            color: #4CAF50;
+        }
+
+        .food-list span {
+            display: inline-block;
+            background-color: #e8f5e9;
+            color: #388e3c;
+            border: 1px solid #c8e6c9;
+            border-radius: 20px;
+            padding: 5px 10px;
+            margin: 5px;
+            font-size: 14px;
+            position: relative;
+            cursor: default;
+        }
+    
+        .food-list span:hover {
+            background-color: #c8e6c9;
+        }
+    
+        .food-list span .delete-button {
+            display: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            text-align: center;
+            line-height: 16px;
+        }
+    
+        .food-list span:hover .delete-button {
+            display: block;
+        }
+    
+        .tooltip {
+            display: none;
+            position: absolute;
+            bottom: 100%; /* 改為元素的上方顯示 */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 10;
+        }
+    
+        .food-list span:hover .tooltip {
+            display: block;
+        }
+
+        .search-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .search-modal .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            position: relative;
+        }
+
+        .search-modal .modal-content .close-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .search-modal .modal-content .close-icon:hover {
+            color: #000;
+        }
+
+        .search-modal input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .search-modal button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-modal button:hover {
+            background-color: #45a049;
+        }
+
+        #foodSearchResults {
+            max-height: 200px; /* 設定最大高度 */
+            overflow-y: auto;  /* 開啟垂直滾動條 */
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+    
+        #foodSearchResults li {
+            padding: 8px;
+            cursor: pointer;
+        }
+    
+        #foodSearchResults li:hover {
+            background-color: #f1f1f1;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="left">
+            <div class="dropdown">
+                <button>Features</button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('search_food_view') }}">Food Info</a>
+                    <a href="{{ url_for('daily_summary_view') }}">Suggestion</a>
+                </div>
+            </div>
+        </div>
+        <div class="right">
+            <a href="{{ url_for('homepage') }}">Back to Home</a>
+            <a href="{{ url_for('profile_view') }}">Profile</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Diet Log</h2>
+
+        <div class="calendar">
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" name="date">
+        </div>
+
+        <table class="meal-table">
+            <thead>
+                <tr>
+                    <th>Meal</th>
+                    <th>Foods</th>
+                </tr>
+            </thead>
+            <tbody id="mealTableBody">
+                <tr>
+                    <td>Breakfast</td>
+                    <td onclick="showSearchModal('Breakfast')">
+                        <div class="food-list" id="Breakfast"></div>
+                        <span class="add-button">+</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Lunch</td>
+                    <td onclick="showSearchModal('Lunch')">
+                        <div class="food-list" id="Lunch"></div>
+                        <span class="add-button">+</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Snacks</td>
+                    <td onclick="showSearchModal('Snacks')">
+                        <div class="food-list" id="Snacks"></div>
+                        <span class="add-button">+</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dinner</td>
+                    <td onclick="showSearchModal('Dinner')">
+                        <div class="food-list" id="Dinner"></div>
+                        <span class="add-button">+</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Late Night</td>
+                    <td onclick="showSearchModal('Late Night')">
+                        <div class="food-list" id="Late Night"></div>
+                        <span class="add-button">+</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="search-modal" id="searchModal">
+        <div class="modal-content">
+            <span class="close-icon" onclick="closeSearchModal()">&times;</span>
+            <h3>Search Food</h3>
+            <input type="text" id="foodSearchInput" placeholder="Enter food name..." onkeyup="searchFood()">
+            <ul id="foodSearchResults"></ul>
+            <button onclick="addFood()">Add</button>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 Personalized Nutrition Recommendation System. All rights reserved.
+    </footer>
+
+    <script>
+        let selectedMeal = "";
+        let searchTimeout;
+        function deleteFood(foodName, mealName) {
+        const selectedDate = document.getElementById('date').value;
+
+        if (!selectedDate || !foodName || !mealName) {
+            alert('Please select a date and food to delete.');
+            return;
+        }
+
+        fetch('/diet-record', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ meal: mealName, date: selectedDate, food: foodName })
+        })
+        .then((response) => {
+            if (response.ok) {
+                const mealElement = document.getElementById(mealName);
+                const spans = mealElement.querySelectorAll('span[data-food]');
+                spans.forEach((span) => {
+                    if (span.getAttribute('data-food') === foodName) {
+                        mealElement.removeChild(span);
+                    }
+                });
+            } else {
+                alert('Failed to delete food. Please try again.');
+            }
+        })
+        .catch((err) => {
+            console.error('Error deleting food:', err);
+            alert('An error occurred while deleting the food.');
+        });
+    }
+
+        function showSearchModal(meal) {
+            selectedMeal = meal;
+            document.getElementById('searchModal').style.display = 'flex';
+        }
+
+        function closeSearchModal() {
+            document.getElementById('searchModal').style.display = 'none';
+        }
+
+        function searchFood() {
+            const query = document.getElementById('foodSearchInput').value;
+        
+            // 防止過於頻繁的請求，添加延遲
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                fetch(`/food-search?keyword=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const resultsList = document.getElementById('foodSearchResults');
+                        resultsList.innerHTML = data.map(food => `<li onclick="selectFood('${food}')">${food}</li>`).join('');
+                    })
+                    .catch(err => console.error('Error fetching search results:', err));
+            }, 300); // 300 毫秒的延遲
+        }
+        
+        function selectFood(food) {
+            document.getElementById('foodSearchInput').value = food;
+        }
+        
+        function addFood() {
+            const foodName = document.getElementById('foodSearchInput').value;
+            const selectedDate = document.getElementById('date').value;
+        
+            if (!foodName || !selectedDate || !selectedMeal) {
+                alert('Please select a date and food.');
+                return;
+            }
+        
+            // 發送新增請求到後端
+            fetch('/diet-record', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ meal: selectedMeal, date: selectedDate, food: foodName })
+            })
+                .then(() => {
+                    // 確保同步更新熱量
+                    fetch(`/food-calories?food=${foodName}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const calories = data.calories || 'N/A';
+                            const foodList = document.getElementById(selectedMeal);
+                            foodList.innerHTML += `
+                                <span data-food="${foodName}" onmouseover="fetchCalories('${foodName}', this)" onmouseout="hideTooltip(this)">
+                                    ${foodName}
+                                    <span class="tooltip">Calories: ${calories} kcal</span>
+                                    <button class="delete-button" onclick="deleteFood('${foodName}', '${selectedMeal}')">x</button>
+                                </span>`;
+                            closeSearchModal();
+                        });
+                })
+                .catch(err => console.error('Error adding food:', err));
+        }
+        
+        function loadMeals() {
+            const selectedDate = document.getElementById('date').value;
+    
+            fetch(`/diet-record?date=${selectedDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const meals = ['Breakfast', 'Lunch', 'Snacks', 'Dinner', 'Late Night'];
+                    meals.forEach(meal => {
+                        const foodList = document.getElementById(meal);
+                        if (data[meal] && data[meal].length > 0) {
+                            foodList.innerHTML = data[meal]
+                                .map(
+                                    food => `
+                                    <span 
+                                        data-food="${food}" 
+                                        onmouseover="fetchCalories('${food}', this)" 
+                                        onmouseout="hideTooltip(this)">
+                                        ${food}
+                                        <span class="tooltip">Loading...</span>
+                                        <button class="delete-button" onclick="deleteFood('${food}', '${meal}')">x</button>
+                                    </span>`
+                                )
+                                .join('');
+                        } else {
+                            foodList.innerHTML = '';
+                        }
+                    });
+                })
+                .catch(err => console.error('Error loading meals:', err));
+        }
+    
+        function fetchCalories(food, element) {
+            const tooltip = element.querySelector('.tooltip');
+            tooltip.textContent = 'Loading...';
+            tooltip.style.display = 'block';
+    
+            fetch(`/food-calories?food=${food}`)
+                .then(response => response.json())
+                .then(data => {
+                    tooltip.textContent = `Calories: ${data.calories || 'N/A'} kcal`;
+                })
+                .catch(err => {
+                    tooltip.textContent = 'Error loading calories';
+                    console.error('Error fetching calories:', err);
+                });
+        }
+    
+        function hideTooltip(element) {
+            const tooltip = element.querySelector('.tooltip');
+            tooltip.style.display = 'none';
+        }
+    
+        document.getElementById('date').addEventListener('change', loadMeals);
+        window.onload = loadMeals;
+    </script>
+</body>
+</html>

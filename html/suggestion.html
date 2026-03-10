@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet Suggestion</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #4CAF50;
+            overflow: visible;
+            padding: 15px 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .left {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .right {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            font-size: 16px;
+        }
+
+        .navbar a:hover {
+            background-color: #45a049;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .dropdown button:hover {
+            background-color: #45a049;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            z-index: 10000;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            top: 100%;
+            left: 0;
+        }
+
+        .dropdown-content a {
+            color: #4CAF50;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown button::after {
+            content: " ▼";
+            font-size: 12px;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 70px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .view-selector {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .view-selector button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .view-selector button.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .view-selector button:hover {
+            background-color: #45a049;
+            color: white;
+        }
+
+        .content {
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .summary {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 10px;
+        }
+
+        table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .chart {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .suggestion {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            color: #2e7d32;
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="left">
+            <div class="dropdown">
+                <button>Features</button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('diet_view') }}">Diet Record</a>
+                    <a href="{{ url_for('search_food_view') }}">Food Info</a>
+                </div>
+            </div>
+        </div>
+        <div class="right">
+            <a href="{{ url_for('homepage') }}">Home</a>
+            <a href="{{ url_for('profile_view') }}">Profile</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Diet Suggestion</h2>
+
+        <div class="view-selector">
+            <button class="active" onclick="loadData('daily')">Daily View</button>
+            <button onclick="loadData('weekly')">Weekly View</button>
+        </div>
+
+        <div id="content">
+            <!-- Daily or Weekly data will be dynamically loaded here -->
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 Personalized Nutrition Recommendation System. All rights reserved.
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            loadData('daily'); // Default to daily view
+        });
+
+        function loadData(viewType) {
+            fetch(`/suggestion/${viewType}`)
+                .then(response => response.json())
+                .then(data => {
+                    const content = document.getElementById('content');
+                    let html = '';
+
+                    if (viewType === 'daily') {
+                        html = `
+                            <h3>Daily Nutrition Summary</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Meal</th>
+                                        <th>Foods</th>
+                                        <th>Calories</th>
+                                        <th>Protein (g)</th>
+                                        <th>Fat (g)</th>
+                                        <th>Carbs (g)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.map(row => `
+                                        <tr>
+                                            <td>${row.meal}</td>
+                                            <td>${row.foods || 'N/A'}</td>
+                                            <td>${row.calories?.toFixed(2) || 0}</td>
+                                            <td>${row.protein?.toFixed(2) || 0}</td>
+                                            <td>${row.fat?.toFixed(2) || 0}</td>
+                                            <td>${row.carbs?.toFixed(2) || 0}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                            <div class="suggestion">Consider balancing your meals with more protein and reducing excessive carbs.</div>
+                        `;
+                    } else {
+                        html = `
+                            <h3>Weekly Nutrition Summary</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Day</th>
+                                        <th>Calories</th>
+                                        <th>Protein (g)</th>
+                                        <th>Fat (g)</th>
+                                        <th>Carbs (g)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.map(row => `
+                                        <tr>
+                                            <td>${row.day.split(' ')[0]}</td>
+                                            <td>${row.calories?.toFixed(2) || 0}</td>
+                                            <td>${row.protein?.toFixed(2) || 0}</td>
+                                            <td>${row.fat?.toFixed(2) || 0}</td>
+                                            <td>${row.carbs?.toFixed(2) || 0}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                            <div class="suggestion">Your weekly average looks good. Keep maintaining a balanced diet.</div>
+                        `;
+                    }
+
+                    content.innerHTML = html;
+
+                    document.querySelectorAll('.view-selector button').forEach(btn => btn.classList.remove('active'));
+                    document.querySelector(`.view-selector button[onclick="loadData('${viewType}')"]`).classList.add('active');
+                })
+                .catch(err => console.error('Error loading data:', err));
+        }
+    </script>
+</body>
+</html>

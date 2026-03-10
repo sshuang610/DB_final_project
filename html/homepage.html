@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #4CAF50;
+            overflow: visible;
+            padding: 15px 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .left {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .right {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            font-size: 16px;
+        }
+
+        .navbar a:hover {
+            background-color: #45a049;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .dropdown button:hover {
+            background-color: #45a049;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            z-index: 10000;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            top: 100%;
+            left: 0;
+        }
+
+        .dropdown-content a {
+            color: #4CAF50;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown button::after {
+            content: " ▼";
+            font-size: 12px;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 70px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .feature-box {
+	    text-decoration: none;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-box h3 {
+            text-decoration: none;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .feature-box p {
+            text-decoration: none;
+            font-size: 14px;
+            color: #666;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="left">
+            <div class="dropdown">
+              
+                <div class="dropdown-content">
+                </div>
+            </div>
+        </div>
+        <div class="right">
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+    <a href="{{ url_for('diet_view') }}" class="feature-box">
+        <h3>Diet Record</h3>
+        <p>Record your daily diet</p>
+    </a>
+    <a href="{{ url_for('search_food_view') }}" class="feature-box">
+        <h3>Food Info</h3>
+        <p>Nutritional information for food</p>
+    </a>
+    <a href="{{ url_for('profile_view') }}" class="feature-box">
+        <h3>Profile</h3>
+        <p>Your personal information</p>
+    </a>
+    <a href="{{ url_for('daily_summary_view') }}" class="feature-box">
+        <h3>Suggestion</h3>
+        <p>Suggestion for your diet</p>
+    </a>
+</div>
+
+
+    <footer>
+        &copy; 2024 Personalized Nutrition Recommendation System. All rights reserved.
+    </footer>
+</body>
+</html>
