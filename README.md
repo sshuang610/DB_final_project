@@ -12,7 +12,7 @@ A simple Flask + MySQL web app for user login, profile management, food search, 
 
 ## Tech Stack
 
-- Python 3
+- Python
 - Flask
 - MySQL
 - HTML templates (Jinja)
